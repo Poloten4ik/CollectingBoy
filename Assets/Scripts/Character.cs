@@ -124,7 +124,6 @@ namespace Assets.Scripts
         private void Run()
         {
             Vector3 direction = transform.right * Input.GetAxis("Horizontal");
-            //transform.position.x = Mathf.Clamp(transform.position.x, -maxX, maxX);
             transform.position = Vector3.MoveTowards(transform.position, transform.position + direction, moveSpeed * Time.deltaTime);
 
             sprite.flipX = direction.x < 0.0f;

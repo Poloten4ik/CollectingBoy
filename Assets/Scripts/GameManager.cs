@@ -69,7 +69,6 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetInt(keyBestScore, score);
         }
-      
     }
 
     public void LoseLife()
