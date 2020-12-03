@@ -11,10 +11,6 @@ namespace Assets.Scripts.PickUps
         public List<AbstractsPickUp> Buff;
         public List<AbstractsPickUp> DeBuff;
 
-
-        private float speedkoef;
-
-
         [Range(0, 100)]
         public float buffChange;
 
@@ -47,5 +43,7 @@ namespace Assets.Scripts.PickUps
             }           
             Repeat();
         }
+
+
     }
 }
