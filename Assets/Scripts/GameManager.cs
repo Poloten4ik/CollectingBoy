@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour
 
     public void Pause()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
             Time.timeScale = 0;
             pause.SetActive(true);
