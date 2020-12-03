@@ -19,31 +19,26 @@ namespace Assets.Scripts.PickUps
             StartCoroutine(SpawnCD());
         }
 
-        private void Repeat()
-        {
-            StartCoroutine(SpawnCD());
-        }
-        
         private IEnumerator SpawnCD()
         {
-            yield return new WaitForSeconds(spawnDuration);
-            Vector2 spawnPosition = transform.position;
-            spawnPosition.x = Random.Range(-7.2f, 7.2f);
-
-            float change = Random.Range(0, 100);
-            if (change < buffChange)
+            while (true)
             {
-                int buffIndex = Random.Range(0, Buff.Count);
-                Instantiate(Buff[buffIndex], spawnPosition, Quaternion.identity);
+                yield return new WaitForSeconds(spawnDuration);
+                Vector2 spawnPosition = transform.position;
+                spawnPosition.x = Random.Range(-7.2f, 7.2f);
+
+                float change = Random.Range(0, 100);
+                if (change < buffChange)
+                {
+                    int buffIndex = Random.Range(0, Buff.Count);
+                    Instantiate(Buff[buffIndex], spawnPosition, Quaternion.identity);
+                }
+                else
+                {
+                    int buffIndex = Random.Range(0, DeBuff.Count);
+                    Instantiate(DeBuff[buffIndex], spawnPosition, Quaternion.identity);
+                }
             }
-            else
-            {
-                int buffIndex = Random.Range(0, DeBuff.Count);
-                Instantiate(DeBuff[buffIndex], spawnPosition, Quaternion.identity);
-            }           
-            Repeat();
         }
-
-
     }
 }

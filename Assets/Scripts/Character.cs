@@ -133,16 +133,16 @@ namespace Assets.Scripts
         public void IncreaseSize()
         {
             transform.DOScale(new Vector3(2, 2, 0), 2);
-            NormalSize();
+            NormalizeSize();
         }
 
         public void DegreaseSize()
         {
             transform.DOScale(new Vector3(0.5f, 0.5f, 0), 2);
-            NormalSize();
+            NormalizeSize();
         }
 
-        public void NozmalSize()
+        public void NormalizeSize()
         {
             StartCoroutine(NormalSize());
         }

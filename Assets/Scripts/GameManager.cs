@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
 
     public void AddLife()
     {
-        if (lives < 3)
+        if (lives < hearts.Length)
         {
             lives++;
             HeartsUpdate();
