@@ -7,18 +7,28 @@ namespace Assets.Scripts
 {
     public class Character : MonoBehaviour
     {
-        private float yPosition;
-        private float maxX = 8.2f;
         public float moveSpeed;
 
-        public bool isSpeedUpBuff;
-        public bool isSizeIncreased;
-        public bool isSpeedDown;
+        [SerializeField]
+        private float jumpForce = 15.0F;
 
+        [HideInInspector]
+        public bool isSpeedUpBuff;
+        [HideInInspector]
+        public bool isSizeIncreased;
+        [HideInInspector]
+        public bool isSpeedDown;
+        [HideInInspector]
+        public bool isGrounded = false;
+
+        new private Rigidbody2D rigidbody;
         private SpriteRenderer sprite;
         private Animator animator;
+        public AudioClip jumpSound;
+        [HideInInspector]
+        public Vector3 defaultPosition;
 
-        private CharacterState State
+        public CharacterState State
         {
             get { return (CharacterState)animator.GetInteger("State"); }
             set { animator.SetInteger("State", (int)value); }
@@ -27,30 +37,47 @@ namespace Assets.Scripts
         private void Awake()
         {
             animator = GetComponent<Animator>();
-            sprite = GetComponent<SpriteRenderer>();
+            sprite = GetComponentInChildren<SpriteRenderer>();
+            rigidbody = GetComponent<Rigidbody2D>();
+        }
+
+        private void FixedUpdate()
+        {
+            CheckGround();
         }
 
         void Start()
         {
-            yPosition = transform.position.y;
+            defaultPosition = transform.position;
 
         }
 
         void Update()
         {
-            State = CharacterState.Idle;
+            if (isGrounded)
+            {
+                State = CharacterState.Idle;
+            }
+
             if (Input.GetButton("Horizontal"))
             {
                 Run();
             }
+            if (isGrounded && Input.GetButtonDown("Jump"))
+            {
+                Jump();
+            }
         }
-        public void CharacterMove()
+
+        private IEnumerator Restart()
         {
-            Vector3 mousePixelPosition = Input.mousePosition;
-            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePixelPosition);
-            Vector3 padNewposition = new Vector3(mouseWorldPosition.x, yPosition, 0);
-            padNewposition.x = Mathf.Clamp(padNewposition.x, -maxX, maxX);
-            transform.position = padNewposition;
+            yield return new WaitForSeconds(1);
+            transform.position = defaultPosition;
+        }
+
+        public void RestartPosition()
+        {
+            StartCoroutine(Restart());
         }
 
         public void SpeedUp()
@@ -105,13 +132,18 @@ namespace Assets.Scripts
 
         public void IncreaseSize()
         {
-            transform.DOScale(new Vector3 (2,2,0), 2);
-            StartCoroutine(NormalSize());
+            transform.DOScale(new Vector3(2, 2, 0), 2);
+            NormalSize();
         }
 
         public void DegreaseSize()
         {
             transform.DOScale(new Vector3(0.5f, 0.5f, 0), 2);
+            NormalSize();
+        }
+
+        public void NozmalSize()
+        {
             StartCoroutine(NormalSize());
         }
 
@@ -124,19 +156,39 @@ namespace Assets.Scripts
         private void Run()
         {
             Vector3 direction = transform.right * Input.GetAxis("Horizontal");
-            //transform.position.x = Mathf.Clamp(transform.position.x, -maxX, maxX);
             transform.position = Vector3.MoveTowards(transform.position, transform.position + direction, moveSpeed * Time.deltaTime);
 
             sprite.flipX = direction.x < 0.0f;
-            State = CharacterState.Run;
+            if (isGrounded)
+            {
+                State = CharacterState.Run;
+            }
         }
 
-        public enum CharacterState
+        private void Jump()
         {
-            Idle,
-            Run
+            State = CharacterState.Jump;
+            rigidbody.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+            AudioManager.Instance.PlaySound(jumpSound);
         }
 
+        private void CheckGround()
+        {
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.1f);
+            isGrounded = colliders.Length > 1;
+
+            if (!isGrounded)
+            {
+                State = CharacterState.Jump;
+            }
+        }
+    }
+
+    public enum CharacterState
+    {
+        Idle,
+        Run,
+        Jump
     }
 }
 
